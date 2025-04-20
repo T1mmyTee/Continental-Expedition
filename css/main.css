@@ -1,0 +1,12 @@
+body {
+    background: #353232;
+    color: #fa3030;
+    font-family: sans-serif;
+  }
+
+#canvas{
+position:absolute;
+top:25px;
+left:25px;
+}
+
