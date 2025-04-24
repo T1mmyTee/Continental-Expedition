@@ -1,12 +1,23 @@
 body {
-    background: #353232;
-    color: #fa3030;
+    background: #272525;
+    color: #000000;
     font-family: sans-serif;
+    margin: 0;
+    padding: 0;
   }
 
+#position{
+    position:relative;
+}
 #canvas{
-position:absolute;
-top:25px;
-left:25px;
+    position:absolute;
+    top: 10px;
+    left: 10px;
+}
+
+#debug{
+    background: #807979;
+    position: absolute;
+    left: 10px;
 }
 

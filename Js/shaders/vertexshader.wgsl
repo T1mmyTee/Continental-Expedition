@@ -33,7 +33,7 @@ fn color(fcell:vec2f,cx: i32) -> u32{
         let realy = abs(cell.y+1);
         return celldata_posX_negY[realx + realy*(i32(cx/2)+1)];
     }
-    return 0;
+    return u32(0);
 }
 
 

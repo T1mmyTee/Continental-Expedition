@@ -1,13 +1,14 @@
 import {createSeededRandom} from "./Seed.js"
+import {ChunkGenDistance, chunkSize} from "./main.js";
 let rng = createSeededRandom(17)
 
 
-export const ChunkList_posX_negY = [];
-export const ChunkList_posX_posY = [];
-export const ChunkList_negX_posY = [];
-export const ChunkList_negX_negY = [];
-export const chunkSize = 50
-export const ChunkGenDistance = 100 //generiert x chunks in jede richtung in rechteckform gesamte fläche 2x*2x 
+var ChunkList_posX_negY = [];
+var ChunkList_posX_posY = [];
+var ChunkList_negX_posY = [];
+var ChunkList_negX_negY = [];
+//var chunkSize = 50
+//var ChunkGenDistance = 10 //generiert x chunks in jede richtung in rechteckform gesamte fläche 2x*2x 
 
 
 function generateChunkRow(){
@@ -32,7 +33,13 @@ export function generateAllChunks(){
         ChunkList_negX_negY.push(generateChunkRow())
     }
 }
-
+export function clearGeneration(){
+    rng.reset()
+    ChunkList_posX_negY.length = 0;
+    ChunkList_posX_posY.length = 0;
+    ChunkList_negX_posY.length = 0;
+    ChunkList_negX_negY.length = 0;
+}
 function chunk(){
     const chunk = []
     let random = rng.nextInt(0, chunkSize*chunkSize-1)
