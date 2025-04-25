@@ -86,11 +86,9 @@ function draw(){
     const tSnap_negX_negY = new Uint32Array(cellData.Snap_negX_negY);
     SHADER.updateBuffer(tSnap_negX_negY,shaderResources.device,shaderResources.cellDataBuffer_negx_negy)
 
-
     const new_value = new Float32Array([CELL_COUNT_X,CELL_COUNT_Y])
 
     SHADER.updateBuffer(new_value,shaderResources.device,shaderResources.CELL_COUNT_Buffer)
 
     SHADER.render(shaderResources,ctx,CELL_COUNT_X,CELL_COUNT_Y)
 }
-
