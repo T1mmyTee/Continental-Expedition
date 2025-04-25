@@ -21,8 +21,6 @@ let ratio = canvas.width / canvas.height;
 let CELL_COUNT_X = 100
 let CELL_COUNT_Y = Math.floor(CELL_COUNT_X / ratio)
 
-
-
 const shaderResources = await SHADER.initShader(ctx,CELL_COUNT_X,CELL_COUNT_Y)
 
 GEN.generateAllChunks()
