@@ -1,5 +1,5 @@
 import {seededRandom} from "./Seed.js"
-import {ChunkGenDistance, chunkSize} from "./main.js";
+import {chunkGenDistance, chunkSize, chunkBorder} from "./main.js";
 import {Chunk} from "./Chunk.js"
 //let rng = createSeededRandom(17)
 
@@ -9,7 +9,7 @@ const ChunkList_posX_posY = [];
 const ChunkList_negX_posY = [];
 const ChunkList_negX_negY = [];
 //var chunkSize = 50
-//var ChunkGenDistance = 10 //generiert x chunks in jede richtung in rechteckform gesamte fläche 2x*2x 
+//var chunkGenDistance = 10 //generiert x chunks in jede richtung in rechteckform gesamte fläche 2x*2x 
 
 
 function generateChunkInPlane(vonx,bisx,vony,bisy,array,xvor,yvor){
@@ -27,10 +27,10 @@ function generateChunkInPlane(vonx,bisx,vony,bisy,array,xvor,yvor){
     }
 }
 export function generateAllChunks(){
-    generateChunkInPlane(0,ChunkGenDistance,0,ChunkGenDistance,ChunkList_posX_posY,1,1)
-    generateChunkInPlane(1,ChunkGenDistance+1,0,ChunkGenDistance,ChunkList_negX_posY,-1,1)
-    generateChunkInPlane(0,ChunkGenDistance,1,ChunkGenDistance+1,ChunkList_posX_negY,1,-1)
-    generateChunkInPlane(1,ChunkGenDistance+1,1,ChunkGenDistance+1,ChunkList_negX_negY,-1,-1)
+    generateChunkInPlane(0,chunkGenDistance,0,chunkGenDistance,ChunkList_posX_posY,1,1)
+    generateChunkInPlane(1,chunkGenDistance+1,0,chunkGenDistance,ChunkList_negX_posY,-1,1)
+    generateChunkInPlane(0,chunkGenDistance,1,chunkGenDistance+1,ChunkList_posX_negY,1,-1)
+    generateChunkInPlane(1,chunkGenDistance+1,1,chunkGenDistance+1,ChunkList_negX_negY,-1,-1)
     
 }
 export function clearGeneration(){
@@ -45,7 +45,7 @@ function generateBaseCellArray(){
         const array = []
         for (let y = 0; y < chunkSize ; y++) {
             let cell = 0
-            if(x  === 0 || y === 0 || x === chunkSize-1 || y == chunkSize-1){ 
+            if(chunkBorder === true && (x === 0 || y === 0 || x === chunkSize-1 || y === chunkSize-1)){ 
                 cell = 2
             }else{
                 cell = 1
@@ -64,19 +64,21 @@ export function orderCellData(CELL_COUNT_X,CELL_COUNT_Y){
     let Snap_negX_posY = []
     let Snap_negX_negY = []
     for (let y = 0; y <= Math.floor((CELL_COUNT_Y+1)/2);y++){
+
+        let Chunky = Math.floor(y / chunkSize)
+        let celly = (y % chunkSize)
+
         for (let x = 0; x <= Math.floor((CELL_COUNT_X+1)/2);x++){
 
             let Chunkx = Math.floor(x / chunkSize)
-            let Chunky = Math.floor(y / chunkSize)
+            
             let cellx = (x % chunkSize)
-            let celly = (y % chunkSize)
+            
 
             
             if (ChunkList_posX_posY[Chunkx] === undefined || ChunkList_posX_posY[Chunkx][Chunky] === undefined){
                 Snap_posX_posY.push(0)
             }else{
-                
-                
                 Snap_posX_posY.push(ChunkList_posX_posY[Chunkx][Chunky].cell(cellx,celly))
             }
             

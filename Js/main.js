@@ -5,12 +5,11 @@ import * as SHADER from "./initShader.js"
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("webgpu");
 const debug = document.getElementById("debug");
-const input1 = document.getElementById("ChunkSize");
-const input2 = document.getElementById("ChunkGenDistance");
 //const input3 = document.getElementById("Seed");
 
-export var chunkSize = 10
-export var ChunkGenDistance = 2
+export let chunkSize = 10
+export let chunkGenDistance = 2
+export let chunkBorder = true
 //export var seed = 1
 
 ctx.canvas.width  = window.innerWidth-40;
@@ -29,28 +28,23 @@ const shaderResources = await SHADER.initShader(ctx,CELL_COUNT_X,CELL_COUNT_Y)
 GEN.generateAllChunks()
 draw()
 
-input1.addEventListener("change", (event) => {
-    chunkSize = Number(event.target.value)
+debug.addEventListener("change", (event) => {
+    const id = event.target.id
+    const value = event.target.value
+    if (id === "ChunkSize"){
+        chunkSize = Number(value)
+    }else if (id === "ChunkGenDistance"){
+        chunkGenDistance = Number(value)
+    }else if (id === "ChunkBorder"){
+        chunkBorder = event.target.checked
+    }else{
+        console.log("error")
+    }
     GEN.clearGeneration()
     console.clear()
     GEN.generateAllChunks()
     draw()
 });
-
-input2.addEventListener("change", (event) => {
-    ChunkGenDistance = Number(event.target.value)
-    GEN.clearGeneration()
-    console.clear()
-    GEN.generateAllChunks()
-    draw()
-});
-
-/*input3.addEventListener("change", (event) => {
-    seed = event.target.value
-    GEN.clearGeneration()
-    GEN.generateAllChunks()
-    draw()
-});*/
 
 window.addEventListener('resize', function(event){
     ctx.canvas.width  = window.innerWidth-40;
@@ -58,7 +52,7 @@ window.addEventListener('resize', function(event){
     debug.style.top = `${ctx.canvas.height+20}px`;
 
     draw()
-  });
+});
 
 canvas.addEventListener("wheel", (event) => {
 
