@@ -1,7 +1,7 @@
 import * as GEN from './Generator.js'
 import * as SHADER from "./initShader.js"
 
-alert("Welcome!\nUse scroll to zoom on map\nThe debug menu is below the map")
+//alert("Welcome!\nUse scroll to zoom on map\nThe debug menu is below the map")
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("webgpu");
 const debug = document.getElementById("debug");
@@ -30,15 +30,17 @@ GEN.generateAllChunks()
 draw()
 
 input1.addEventListener("change", (event) => {
-    chunkSize = event.target.value
+    chunkSize = Number(event.target.value)
     GEN.clearGeneration()
+    console.clear()
     GEN.generateAllChunks()
     draw()
 });
 
 input2.addEventListener("change", (event) => {
-    ChunkGenDistance = event.target.value
+    ChunkGenDistance = Number(event.target.value)
     GEN.clearGeneration()
+    console.clear()
     GEN.generateAllChunks()
     draw()
 });
@@ -72,20 +74,22 @@ canvas.addEventListener("wheel", function(e) {
 }, { passive: false });
 
 function draw(){
+    
     ratio = canvas.width/canvas.height
     CELL_COUNT_Y = Math.floor(CELL_COUNT_X / ratio)
 
     let cellData = GEN.orderCellData(CELL_COUNT_X,CELL_COUNT_Y)
 
-
+    
     const tSnap_posX_posY = new Uint32Array(cellData.Snap_posX_posY);
     SHADER.updateBuffer(tSnap_posX_posY,shaderResources.device,shaderResources.cellDataBuffer_posx_posy)
 
+    const tSnap_negX_posY = new Uint32Array(cellData.Snap_negX_posY);
+    
+    SHADER.updateBuffer(tSnap_negX_posY,shaderResources.device,shaderResources.cellDataBuffer_negx_posy)
+
     const tSnap_posX_negY = new Uint32Array(cellData.Snap_posX_negY);
     SHADER.updateBuffer(tSnap_posX_negY,shaderResources.device,shaderResources.cellDataBuffer_posx_negy)
-
-    const tSnap_negX_posY = new Uint32Array(cellData.Snap_negX_posY);
-    SHADER.updateBuffer(tSnap_negX_posY,shaderResources.device,shaderResources.cellDataBuffer_negx_posy)
 
     const tSnap_negX_negY = new Uint32Array(cellData.Snap_negX_negY);
     SHADER.updateBuffer(tSnap_negX_negY,shaderResources.device,shaderResources.cellDataBuffer_negx_negy)

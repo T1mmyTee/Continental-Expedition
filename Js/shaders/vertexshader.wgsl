@@ -14,14 +14,12 @@ struct VertexShaderOutput {
 fn color(fcell:vec2f,cx: i32) -> u32{
     let cell = vec2<i32>(ceil(fcell));
 
-    let cellwert2 = celldata_negX_posY[cell.x + cell.y*(i32(cx/2)+1)];
-    let cellwert3 = celldata_negX_negY[cell.x + cell.y*(i32(cx/2)+1)];
-
     if cell.x >= 0 && cell.y >= 0{
         return celldata_posX_posY[cell.x + cell.y*(i32(cx/2)+1)];
+
     }else if cell.x < 0 && cell.y >= 0{
         let realx = abs(cell.x+1);
-        return celldata_posX_negY[realx + cell.y*(i32(cx/2)+1)];
+        return celldata_negX_posY[realx + cell.y*(i32(cx/2)+1)];
 
     }else if cell.x >= 0 && cell.y < 0{
         
@@ -31,7 +29,7 @@ fn color(fcell:vec2f,cx: i32) -> u32{
     }else if cell.x < 0 && cell.y < 0{
         let realx = abs(cell.x+1);
         let realy = abs(cell.y+1);
-        return celldata_posX_negY[realx + realy*(i32(cx/2)+1)];
+        return celldata_negX_negY[realx + realy*(i32(cx/2)+1)];
     }
     return u32(0);
 }
@@ -79,9 +77,6 @@ fn vertexMain(@location(0) pos: vec2f, @builtin(instance_index) instance: u32) -
 fn fragmentMain(input : VertexShaderOutput) -> @location(0) vec4f {
     let cell = ceil(input.cell);
 
-    if cell.x == 0 && cell.y == 0{
-        return vec4f(1, 0, 0, 1);
-    }
     if input.color == 0{
         return vec4f(1, 1, 1, 1);
     }else if input.color == 1{

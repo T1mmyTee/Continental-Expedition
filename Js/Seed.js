@@ -1,30 +1,20 @@
-export function createSeededRandom(seed) {
-    // Initiale Speicherung des Seeds, um ihn später wiederverwenden zu können
-    const originalSeed = seed % 2147483647;
-    let state = originalSeed <= 0 ? originalSeed + 2147483646 : originalSeed;
+export function seededRandom(seed, x, y, z, min = 0, max = 1) {
+    // Kombiniere Seed und Koordinaten zu einer Zahl
+    const combinedSeed = (x * 73856093) ^ (y * 19349663) ^ (z * 98374673) ^ seed;
   
-    // Funktion für nächste zufällige Fließkommazahl
-    function nextFloat() {
-      state = (state * 16807) % 2147483647;
-      return (state - 1) / 2147483646;
+    // Mulberry32 PRNG
+    function mulberry32(a) {
+      return function() {
+        let t = a += 0x6D2B79F5;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
     }
   
-    // Funktion für nächste zufällige Ganzzahl
-    function nextInt(min, max) {
-      return Math.floor(nextFloat() * (max - min + 1)) + min;
-    }
+    const rand = mulberry32(combinedSeed);
+    const value = rand();
   
-    // Reset-Funktion, um den Zustand auf den ursprünglichen Seed zurückzusetzen
-    function reset() {
-      state = originalSeed <= 0 ? originalSeed + 2147483646 : originalSeed;
-    }
-  
-    return { nextFloat, nextInt, reset };
-}
-  /* Nutzung:
-  let rng = createSeededRandom(9876);
-  
-  console.log(rng.nextFloat());     // z. B. 0.2382...
-  console.log(rng.nextInt(1, 100));  // z. B. 7
-  console.log(rng.nextInt(1, 100)); // z. B. 145
-  */
+    // Skaliere auf gewünschten Bereich
+    return Math.floor(value * (max - min + 1)) + min;
+  }

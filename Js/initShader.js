@@ -141,25 +141,25 @@ export async function initShader(ctx,CELL_COUNT_X,CELL_COUNT_Y){
 
 
     const cellDataBuffer_posx_posy = device.createBuffer({
-        label: "cellData Storage",
+        label: "cellData_posx_posy",
         size: cellData_posx_posy.byteLength,
         usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
     });
 
     const cellDataBuffer_posx_negy = device.createBuffer({
-        label: "cellData Storage",
+        label: "cellData_posx_negy",
         size: cellData_posx_negy.byteLength,
         usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
     });
 
     const cellDataBuffer_negx_posy = device.createBuffer({
-        label: "cellData Storage",
+        label: "cellData_negx_posy",
         size: cellData_negx_posy.byteLength,
         usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
     });
 
     const cellDataBuffer_negx_negy = device.createBuffer({
-        label: "cellData Storage",
+        label: "cellData_negx_negy",
         size: cellData_negx_negy.byteLength,
         usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
     });

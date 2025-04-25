@@ -1,62 +1,61 @@
-import {createSeededRandom} from "./Seed.js"
+import {seededRandom} from "./Seed.js"
 import {ChunkGenDistance, chunkSize} from "./main.js";
-let rng = createSeededRandom(17)
+import {Chunk} from "./Chunk.js"
+//let rng = createSeededRandom(17)
 
 
-var ChunkList_posX_negY = [];
-var ChunkList_posX_posY = [];
-var ChunkList_negX_posY = [];
-var ChunkList_negX_negY = [];
+const ChunkList_posX_negY = [];
+const ChunkList_posX_posY = [];
+const ChunkList_negX_posY = [];
+const ChunkList_negX_negY = [];
 //var chunkSize = 50
 //var ChunkGenDistance = 10 //generiert x chunks in jede richtung in rechteckform gesamte fläche 2x*2x 
 
 
-function generateChunkRow(){
-    const yLine = []
-    for (let y = 0; y <= ChunkGenDistance ; y++) {
-        yLine.push(chunk())
+function generateChunkInPlane(vonx,bisx,vony,bisy,array,xvor,yvor){
+   
+    for (let x = vonx; x <= bisx ; x++) {
+        const ChunkColumn = []
+        for (let y = vony; y <= bisy; y++) {
+            let coordx = x*xvor
+            let coordy = y*yvor
+            const myChunk = new Chunk(coordx,coordy,generateBaseCellArray())
+            myChunk.changeCell(seededRandom(coordx,coordy,0,0,chunkSize-1),seededRandom(coordx,coordy,1,0,chunkSize-1),3)
+            ChunkColumn.push(myChunk)
+        }
+        array.push(ChunkColumn)
     }
-    return yLine    
 }
-
 export function generateAllChunks(){
-    for (let x = 0; x <= ChunkGenDistance ; x++) {
-        ChunkList_posX_negY.push(generateChunkRow())
-    }
-    for (let x = 0; x <= ChunkGenDistance ; x++) {
-        ChunkList_posX_posY.push(generateChunkRow())
-    }
-    for (let x = 0; x <= ChunkGenDistance ; x++) {
-        ChunkList_negX_posY.push(generateChunkRow())
-    }
-    for (let x = 0; x <= ChunkGenDistance ; x++) {
-        ChunkList_negX_negY.push(generateChunkRow())
-    }
+    generateChunkInPlane(0,ChunkGenDistance,0,ChunkGenDistance,ChunkList_posX_posY,1,1)
+    generateChunkInPlane(1,ChunkGenDistance+1,0,ChunkGenDistance,ChunkList_negX_posY,-1,1)
+    generateChunkInPlane(0,ChunkGenDistance,1,ChunkGenDistance+1,ChunkList_posX_negY,1,-1)
+    generateChunkInPlane(1,ChunkGenDistance+1,1,ChunkGenDistance+1,ChunkList_negX_negY,-1,-1)
+    
 }
 export function clearGeneration(){
-    rng.reset()
     ChunkList_posX_negY.length = 0;
-    ChunkList_posX_posY.length = 0;
     ChunkList_negX_posY.length = 0;
+    ChunkList_posX_posY.length = 0;
     ChunkList_negX_negY.length = 0;
 }
-function chunk(){
-    const chunk = []
-    let random = rng.nextInt(0, chunkSize*chunkSize-1)
-    for (let x = 0; x <= chunkSize*chunkSize-1 ; x++) {
-        if (x === random){
-            chunk[x] = 3
-        }else if(x % chunkSize === 0 ||  x % chunkSize == chunkSize-1 || x < chunkSize || x > chunkSize*chunkSize-1-chunkSize){ 
-            chunk[x] = 2
-        }else{
-            chunk[x] = 1
-        }  
-    }
-    return chunk
-}
+function generateBaseCellArray(){
+    const baseCellArray = []
+    for (let x = 0; x < chunkSize ; x++) {
+        const array = []
+        for (let y = 0; y < chunkSize ; y++) {
+            let cell = 0
+            if(x  === 0 || y === 0 || x === chunkSize-1 || y == chunkSize-1){ 
+                cell = 2
+            }else{
+                cell = 1
+            } 
 
-function changeChunkCell(array,cell,wert){
-    array[cell] = wert
+            array.push(cell) 
+        }
+        baseCellArray.push(array)
+    }
+    return baseCellArray
 }
 
 export function orderCellData(CELL_COUNT_X,CELL_COUNT_Y){
@@ -70,34 +69,36 @@ export function orderCellData(CELL_COUNT_X,CELL_COUNT_Y){
             let Chunkx = Math.floor(x / chunkSize)
             let Chunky = Math.floor(y / chunkSize)
             let cellx = (x % chunkSize)
-            let celly = (y %chunkSize)*chunkSize
+            let celly = (y % chunkSize)
 
             
             if (ChunkList_posX_posY[Chunkx] === undefined || ChunkList_posX_posY[Chunkx][Chunky] === undefined){
-                Snap_posX_posY.push(5)
+                Snap_posX_posY.push(0)
             }else{
-                Snap_posX_posY.push(ChunkList_posX_posY[Chunkx][Chunky][cellx+celly])
+                
+                
+                Snap_posX_posY.push(ChunkList_posX_posY[Chunkx][Chunky].cell(cellx,celly))
             }
             
-            if (ChunkList_posX_negY[Chunkx] === undefined || ChunkList_posX_posY[Chunkx][Chunky] === undefined){
-                Snap_posX_negY.push(5)
-            }else{
-    //da man hier in -x richtung geht, aber der key der chunk zellen per chunk in x+ richtung steigt muss der key umgedreht werden (0=chunksize-1) und (chunksize-1 = 0)
-                Snap_posX_negY.push(ChunkList_posX_negY[Chunkx][Chunky][(chunkSize-1-cellx)+celly])
-            }
-
-            if (ChunkList_negX_posY[Math.floor(x / chunkSize)] === undefined || ChunkList_negX_posY[Math.floor(x / chunkSize)][y] === undefined){
+            if (ChunkList_negX_posY[Chunkx] === undefined || ChunkList_negX_posY[Chunkx][Chunky] === undefined){
                 Snap_negX_posY.push(0)
             }else{
-                Snap_negX_posY.push(ChunkList_negX_posY[Math.floor(x / chunkSize)][y][x % chunkSize])
+                Snap_negX_posY.push(ChunkList_negX_posY[Chunkx][Chunky].cell(chunkSize-1-cellx,celly))
             }
 
-            if (ChunkList_negX_negY[Math.floor(x / chunkSize)] === undefined || ChunkList_negX_negY[Math.floor(x / chunkSize)][y] === undefined){
+            if (ChunkList_posX_negY[Chunkx] === undefined || ChunkList_posX_negY[Chunkx][Chunky] === undefined){
+                Snap_posX_negY.push(0)
+            }else{
+                Snap_posX_negY.push(ChunkList_posX_negY[Chunkx][Chunky].cell(cellx,chunkSize-1-celly))
+            }
+
+            if (ChunkList_negX_negY[Chunkx] === undefined || ChunkList_negX_negY[Chunkx][Chunky] === undefined){
                 Snap_negX_negY.push(0)
             }else{
-                Snap_negX_negY.push(ChunkList_negX_negY[Math.floor(x / chunkSize)][y][x % chunkSize])
+                Snap_negX_negY.push(ChunkList_negX_negY[Chunkx][Chunky].cell(chunkSize-1-cellx,chunkSize-1-celly))
             }
         }
     }
-    return {Snap_posX_posY, Snap_posX_negY, Snap_negX_posY ,Snap_negX_negY}
+
+    return {Snap_posX_posY, Snap_negX_posY ,Snap_posX_negY, Snap_negX_negY}
 }
