@@ -8,7 +8,7 @@ const debug = document.getElementById("debug");
 //const input3 = document.getElementById("Seed");
 
 export let chunkSize = 10
-export let chunkGenDistance = 2
+export let chunkGenDistance = 1
 export let chunkBorder = true
 //export var seed = 1
 
@@ -32,7 +32,7 @@ debug.addEventListener("change", (event) => {
     if (id === "ChunkSize"){
         chunkSize = Number(value)
     }else if (id === "ChunkGenDistance"){
-        chunkGenDistance = Number(value)
+        chunkGenDistance = Number(value)-1
     }else if (id === "ChunkBorder"){
         chunkBorder = event.target.checked
     }else{
@@ -66,25 +66,14 @@ canvas.addEventListener("wheel", function(e) {
 }, { passive: false });
 
 function draw(){
-    
+    console.clear()
     ratio = canvas.width/canvas.height
     CELL_COUNT_Y = Math.floor(CELL_COUNT_X / ratio)
 
     let cellData = GEN.orderCellData(CELL_COUNT_X,CELL_COUNT_Y)
 
-    
-    const tSnap_posX_posY = new Uint32Array(cellData.Snap_posX_posY);
-    SHADER.updateBuffer(tSnap_posX_posY,shaderResources.device,shaderResources.cellDataBuffer_posx_posy)
-
-    const tSnap_negX_posY = new Uint32Array(cellData.Snap_negX_posY);
-    
-    SHADER.updateBuffer(tSnap_negX_posY,shaderResources.device,shaderResources.cellDataBuffer_negx_posy)
-
-    const tSnap_posX_negY = new Uint32Array(cellData.Snap_posX_negY);
-    SHADER.updateBuffer(tSnap_posX_negY,shaderResources.device,shaderResources.cellDataBuffer_posx_negy)
-
-    const tSnap_negX_negY = new Uint32Array(cellData.Snap_negX_negY);
-    SHADER.updateBuffer(tSnap_negX_negY,shaderResources.device,shaderResources.cellDataBuffer_negx_negy)
+    const tSnap = new Uint32Array(cellData.Snap);
+    SHADER.updateBuffer(tSnap,shaderResources.device,shaderResources.cellDataBuffer_posx_posy)
 
     const new_value = new Float32Array([CELL_COUNT_X,CELL_COUNT_Y])
 

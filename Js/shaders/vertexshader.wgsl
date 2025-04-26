@@ -11,27 +11,10 @@ struct VertexShaderOutput {
     @location(2) @interpolate(flat) color : u32
 };
 
-fn color(fcell:vec2f,cx: i32) -> u32{
-    let cell = vec2<i32>(ceil(fcell));
-
-    if cell.x >= 0 && cell.y >= 0{
-        return celldata_posX_posY[cell.x + cell.y*(i32(cx/2)+1)];
-
-    }else if cell.x < 0 && cell.y >= 0{
-        let realx = abs(cell.x+1);
-        return celldata_negX_posY[realx + cell.y*(i32(cx/2)+1)];
-
-    }else if cell.x >= 0 && cell.y < 0{
+fn color(fcell:vec2f,cx: i32,cy: i32) -> u32{
+    var cell = vec2<i32>(ceil(fcell));
         
-        let realy = abs(cell.y+1);
-        return celldata_posX_negY[cell.x + realy*(i32(cx/2)+1)];
-
-    }else if cell.x < 0 && cell.y < 0{
-        let realx = abs(cell.x+1);
-        let realy = abs(cell.y+1);
-        return celldata_negX_negY[realx + realy*(i32(cx/2)+1)];
-    }
-    return u32(0);
+    return celldata_posX_posY[cell.x+i32(cx/2) + ((i32(cy/2)-cell.y)*(i32(cx)))];
 }
 
 
@@ -43,15 +26,6 @@ fn vertexMain(@location(0) pos: vec2f, @builtin(instance_index) instance: u32) -
     let cx = u32(drawcount.x);
     let cy = u32(drawcount.y);
 
-    var offsetX = 0.0;
-    if (i32(cx) % 2 != 0){
-        offsetX = 0.5;
-    }
-    var offsetY = 0.0;
-    if (i32(cy) % 2 != 0){
-        offsetY = 0.5;
-    }
-    
     let cellx = i32(i % cx) - i32(cx) / 2;
     let celly = i32(i / cx) - i32(cy) / 2;
 
@@ -59,10 +33,10 @@ fn vertexMain(@location(0) pos: vec2f, @builtin(instance_index) instance: u32) -
     let cell = vec2f(f32(cellx),f32(celly));
 
     let cellSize = vec2f(2.0) / (cellcount*2);
-    let cellOffset = cellSize * cell *2; // Updated
+    let cellOffset = cellSize * cell*2; // Updated
     var gridPos = ((pos)* cellSize);
 
-    let c = color(cell,i32(cx));
+    let c = color(cell,i32(cx),i32(cy));
 
     vsOutput.position = vec4f(gridPos + cellOffset, 0, 1);
     vsOutput.instance = i;
@@ -77,6 +51,9 @@ fn vertexMain(@location(0) pos: vec2f, @builtin(instance_index) instance: u32) -
 fn fragmentMain(input : VertexShaderOutput) -> @location(0) vec4f {
     let cell = ceil(input.cell);
 
+    if cell.x == 0 && cell.y == 0{
+        return vec4f(0, 123.0/255.0, 246.0/255.0, 1);
+    }
     if input.color == 0{
         return vec4f(1, 1, 1, 1);
     }else if input.color == 1{

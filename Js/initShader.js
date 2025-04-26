@@ -36,13 +36,13 @@ export async function initShader(ctx,CELL_COUNT_X,CELL_COUNT_Y){
 
     const vertices = new Float32Array([
         //   X,    Y,
-        -1, -1, // Triangle 1 (Blue)
-        1, -1,
-        1,  1,
+        -0.9, -0.9, // Triangle 1 (Blue)
+        0.9, -0.9,
+        0.9,  0.9,
     
-        -1, -1, // Triangle 2 (Red)
-        1,  1,
-        -1,  1,
+        -0.9, -0.9, // Triangle 2 (Red)
+        0.9,  0.9,
+        -0.9,  0.9,
     ]);
 
     const vertexBuffer = device.createBuffer({
