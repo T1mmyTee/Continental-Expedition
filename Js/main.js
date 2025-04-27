@@ -10,12 +10,10 @@ const debug = document.getElementById("debug");
 export let chunkSize = 10
 export let chunkGenDistance = 1
 export let chunkBorder = true
+export let travelDist = [0,0]
 //export var seed = 1
 
-ctx.canvas.width  = window.innerWidth-40;
-ctx.canvas.height = window.innerHeight-40;
-
-debug.style.top = `${ctx.canvas.height+20}px`;
+resizeCanvas()
 
 let ratio = canvas.width / canvas.height;
 let CELL_COUNT_X = 100
@@ -39,18 +37,34 @@ debug.addEventListener("change", (event) => {
         console.log("error")
     }
     GEN.clearGeneration()
-    console.clear()
     GEN.generateAllChunks()
     draw()
 });
 
 window.addEventListener('resize', function(event){
-    ctx.canvas.width  = window.innerWidth-40;
-    ctx.canvas.height = window.innerHeight-40;
-    debug.style.top = `${ctx.canvas.height+20}px`;
-
+    resizeCanvas()
     draw()
 });
+
+window.addEventListener('keydown',function(event){
+      switch(event.code) {
+        case "ArrowRight":
+            travelDist[0]++;
+            break;
+        case "ArrowLeft":
+            travelDist[0]--;
+            break;
+        case "ArrowUp":
+            travelDist[1]++;
+            break;
+        case "ArrowDown":
+            travelDist[1]--;
+            break;
+        default:
+           console.log(event.key)
+      }
+    draw()
+})
 
 canvas.addEventListener("wheel", (event) => {
 
@@ -80,4 +94,10 @@ function draw(){
     SHADER.updateBuffer(new_value,shaderResources.device,shaderResources.CELL_COUNT_Buffer)
 
     SHADER.render(shaderResources,ctx,CELL_COUNT_X,CELL_COUNT_Y)
+}
+
+function resizeCanvas(){
+    ctx.canvas.width  = window.innerWidth-40;
+    ctx.canvas.height = window.innerHeight-40;
+    debug.style.top = `${ctx.canvas.height+20}px`;
 }

@@ -1,5 +1,5 @@
 import {seededRandom} from "./Seed.js"
-import {chunkGenDistance, chunkSize, chunkBorder} from "./main.js";
+import {chunkGenDistance, chunkSize, chunkBorder, travelDist} from "./main.js";
 import {Chunk} from "./Chunk.js"
 //let rng = createSeededRandom(17)
 const seed = 1
@@ -46,9 +46,7 @@ function generateBaseCellArray(){
             let cell = 0
             if(chunkBorder === true && (x === 0 || y === 0 || x === chunkSize-1 || y === chunkSize-1)){ 
                 cell = 2
-            }/*else if(y % 2 === 0){
-                cell = 3
-            }*/else{
+            }else{
                 cell = 1
             } 
 
@@ -79,13 +77,12 @@ function getChunkListAndPos(x,y,Chunkx,Chunky,cellx,celly){
 
 export function orderCellData(CELL_COUNT_X,CELL_COUNT_Y){
     let Snap = []
-    console.log(CELL_COUNT_X+" "+CELL_COUNT_Y)
-    for (let y = Math.ceil((CELL_COUNT_Y)/2); y > -Math.ceil((CELL_COUNT_Y+1)/2);y--){
+    for (let y = Math.ceil((CELL_COUNT_Y)/2)+travelDist[1]; y > -Math.ceil((CELL_COUNT_Y+1)/2)+travelDist[1];y--){
 
         let Chunky = Math.floor(y / chunkSize)
         let celly = (y % chunkSize + chunkSize) % chunkSize
 
-        for (let x = -Math.ceil((CELL_COUNT_X)/2); x < Math.ceil((CELL_COUNT_X+1)/2);x++){
+        for (let x = -Math.ceil((CELL_COUNT_X)/2)+travelDist[0]; x < Math.ceil((CELL_COUNT_X+1)/2)+travelDist[0];x++){
 
             let Chunkx = Math.floor(x / chunkSize)
             let cellx = (x % chunkSize + chunkSize) % chunkSize
