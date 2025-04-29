@@ -11,7 +11,7 @@ export let chunkSize = 10
 export let chunkGenDistance = 1
 export let chunkBorder = true
 export let travelDist = [0,0]
-//export var seed = 1
+export let seed = 1
 
 resizeCanvas()
 
@@ -33,6 +33,8 @@ debug.addEventListener("change", (event) => {
         chunkGenDistance = Number(value)
     }else if (id === "ChunkBorder"){
         chunkBorder = event.target.checked
+    }else if (id === "Seed"){
+        seed = value
     }else{
         console.log("error")
     }

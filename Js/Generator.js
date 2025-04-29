@@ -1,8 +1,7 @@
 import {seededRandom} from "./Seed.js"
-import {chunkGenDistance, chunkSize, chunkBorder, travelDist} from "./main.js";
+import {chunkGenDistance, chunkSize, chunkBorder, travelDist, seed} from "./main.js";
 import {Chunk} from "./Chunk.js"
 //let rng = createSeededRandom(17)
-const seed = 1
 const ChunkList_posX_negY = [];
 const ChunkList_posX_posY = [];
 const ChunkList_negX_posY = [];
