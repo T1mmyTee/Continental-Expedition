@@ -30,7 +30,7 @@ debug.addEventListener("change", (event) => {
     if (id === "ChunkSize"){
         chunkSize = Number(value)
     }else if (id === "ChunkGenDistance"){
-        chunkGenDistance = Number(value)-1
+        chunkGenDistance = Number(value)
     }else if (id === "ChunkBorder"){
         chunkBorder = event.target.checked
     }else{
@@ -63,6 +63,7 @@ window.addEventListener('keydown',function(event){
         default:
            console.log(event.key)
       }
+    GEN.generateAllChunks()
     draw()
 })
 
@@ -80,7 +81,7 @@ canvas.addEventListener("wheel", function(e) {
 }, { passive: false });
 
 function draw(){
-    console.clear()
+    //console.clear()
     ratio = canvas.width/canvas.height
     CELL_COUNT_Y = Math.floor(CELL_COUNT_X / ratio)
 

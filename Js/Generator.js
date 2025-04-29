@@ -10,28 +10,75 @@ const ChunkList_negX_negY = [];
 //var chunkSize = 50
 //var chunkGenDistance = 10 //generiert x chunks in jede richtung in rechteckform gesamte fläche 2x*2x 
 
+function calculateSign(dim,vor){
+    return vor === 1 ? dim : -(dim+1)
+}
 
-function generateChunkInPlane(vonx,bisx,vony,bisy,array,xvor,yvor){
-   
-    for (let x = vonx; x <= bisx ; x++) {
-        const ChunkColumn = []
-        for (let y = vony; y <= bisy; y++) {
-            let coordx = x*xvor
-            let coordy = y*yvor
-            const myChunk = new Chunk(coordx,coordy,generateBaseCellArray())
-            myChunk.changeCell(seededRandom(seed,coordx,coordy,0,0,chunkSize-1),seededRandom(seed,coordx,coordy,1,0,chunkSize-1),3)
-            ChunkColumn.push(myChunk)
-        }
-        array.push(ChunkColumn)
+function checkForChunk(x,y,ChunkList){
+    if (!ChunkList[x] || !ChunkList[x][y]){
+        return null
+    }else{
+        return ChunkList[x][y]
     }
 }
-export function generateAllChunks(){
-    generateChunkInPlane(0,chunkGenDistance,0,chunkGenDistance,ChunkList_posX_posY,1,1)
-    generateChunkInPlane(1,chunkGenDistance+1,0,chunkGenDistance,ChunkList_negX_posY,-1,1)
-    generateChunkInPlane(0,chunkGenDistance,1,chunkGenDistance+1,ChunkList_posX_negY,1,-1)
-    generateChunkInPlane(1,chunkGenDistance+1,1,chunkGenDistance+1,ChunkList_negX_negY,-1,-1)
-    
+
+function generateChunk(x,y){
+    const myChunk = new Chunk(x,y,generateBaseCellArray())
+    myChunk.changeCell(seededRandom(seed,x,y,0,0,chunkSize-1),seededRandom(seed,x,y,1,0,chunkSize-1),3)
+    return myChunk
 }
+function findChunkList(x,y){
+    let ChunkList = 0
+    if (x >= 0 && y >= 0){
+        ChunkList = ChunkList_posX_posY
+    }else if (x < 0 && y >= 0){
+        ChunkList = ChunkList_negX_posY
+    }else if (x >= 0 && y < 0){
+        ChunkList = ChunkList_posX_negY
+    }else if (x < 0 && y < 0){
+        ChunkList = ChunkList_negX_negY
+    }else{
+        console.log("error")
+    }
+    return ChunkList
+}
+function findChunkListCoords(ChunkList,x,y){
+    if (ChunkList === ChunkList_posX_posY){
+        return {x: x,y: y}
+    }else if (ChunkList === ChunkList_negX_posY){
+        return {x: Math.abs(x+1),y: y}
+    }else if (ChunkList === ChunkList_posX_negY){
+        return {x: x,y: Math.abs(y+1)}
+    }else if (ChunkList === ChunkList_negX_negY){
+        return {x: Math.abs(x+1),y: Math.abs(y+1)}
+    }else{
+        console.log("error")
+    }
+}
+function fitInChunkList(myChunk,ChunkList,coords){
+    if (ChunkList[coords.x] == null){
+        ChunkList[coords.x] = []
+    }
+    ChunkList[coords.x][coords.y] = myChunk
+
+}
+export function generateAllChunks(){
+    let offsetX = Math.floor(travelDist[0]/chunkSize)
+    let offsetY = Math.floor(travelDist[1]/chunkSize)
+    for (let x = -chunkGenDistance+offsetX; x <= chunkGenDistance+offsetX ; x++) {
+        for (let y = -chunkGenDistance+offsetY ; y <= chunkGenDistance+offsetY ; y++) {
+            let ChunkList = findChunkList(x,y)
+            let ChunkListCoords = findChunkListCoords(ChunkList,x,y)
+
+            if (checkForChunk(ChunkListCoords.x,ChunkListCoords.y,ChunkList) != null){
+                continue;
+            }
+            const myChunk = generateChunk(x,y)
+            fitInChunkList(myChunk,ChunkList,ChunkListCoords)
+        }
+    }
+}
+
 export function clearGeneration(){
     ChunkList_posX_negY.length = 0;
     ChunkList_negX_posY.length = 0;
